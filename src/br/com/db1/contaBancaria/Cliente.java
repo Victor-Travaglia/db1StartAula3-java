@@ -6,6 +6,7 @@ public class Cliente {
 	private String cpf;
 	
 	public Cliente(String nome, String cpf) {
+		
 		if (nome == null) {
 			throw new RuntimeException("Nome é obrigatório");
 		}

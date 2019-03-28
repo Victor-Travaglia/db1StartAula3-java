@@ -20,6 +20,14 @@ public class ContaBancaria {
 		this.cliente = cliente;
 	}
 	
+	public Double getSaldo() {
+		return saldo;
+	}
+	
+	public List<ContaBancariaHistorico> getHistoricos() {
+		return this.historicos;
+	}
+	
 	public void sacar(Double valor) {
 		if (valor > saldo) {
 			throw new RuntimeException("Saldo Insuficiente");
@@ -29,7 +37,7 @@ public class ContaBancaria {
 			throw new RuntimeException("Saque deve conter valores maiores do que 0");
 		}
 		this.saldo -= valor;
-		ContaBancariaHistorico historico = new ContaBancariaHistorico(ContaCorrenteTipoOperacao.SAIDA, valor);
+		ContaBancariaHistorico historico = new ContaBancariaHistorico(ContaBancariaTipoOperacao.SAIDA, valor);
 		this.historicos.add(historico);
 	}
 	
@@ -38,15 +46,26 @@ public class ContaBancaria {
 			throw new RuntimeException("Depósito deve conter valores maiores do que 0");
 		}
 		this.saldo += valor;
-		ContaBancariaHistorico historico = new ContaBancariaHistorico(ContaCorrenteTipoOperacao.ENTRADA, valor);
+		ContaBancariaHistorico historico = new ContaBancariaHistorico(ContaBancariaTipoOperacao.ENTRADA, valor);
+		this.novoHistorico(ContaBancariaTipoOperacao.ENTRADA, valor);
+	}
+	
+	public void transferir(Double valor, ContaBancaria contaAlvo) {
+		if (valor <= 0) {
+			throw new RuntimeException("Valor para a transferência invalido");
+		}
+		
+		if (contaAlvo == null) {
+			throw new RuntimeException("Conta do destinatário é obrigatória");
+		}
+		
+		this.sacar(valor);
+		contaAlvo.depositar(valor);
+	}
+	
+	private void novoHistorico(ContaBancariaTipoOperacao tipo, Double valor) {
+		ContaBancariaHistorico historico = new ContaBancariaHistorico(ContaBancariaTipoOperacao.ENTRADA,valor);
 		this.historicos.add(historico);
-	}
-	
-	public Double getSaldo() {
-		return saldo;
-	}
-	
-	public List<ContaBancariaHistorico> getHistoricos() {
-		return this.historicos;
+		
 	}
 }
